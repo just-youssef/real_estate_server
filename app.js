@@ -8,7 +8,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 
 // routers
-// import postsRouter from './routes/posts.js';
+import userRouter from './routes/user.route.js';
+import ErrorMW from "./middlewares/error.mw.js";
 
 // load environment variables
 configDotenv();
@@ -28,7 +29,10 @@ app.use(urlencoded({ extended: true }));
 app.use(json());
 
 // using routers
-// app.use("/api/posts", postsRouter);
+app.use("/api/user", userRouter);
+
+// using error middleware at the end
+app.use(ErrorMW);
 
 // start app
 const port = process.env.PORT || 5000;
