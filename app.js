@@ -36,4 +36,7 @@ app.use(ErrorMW);
 
 // start app
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server running on host http://localhost:${port}/`))
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`)
+    console.log(`API_ROOT: ${process.env.API_ROOT}`)
+})

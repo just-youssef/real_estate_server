@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { signup } from "../controllers/user.controller.js";
+import { checkVerified, signup, verify } from "../controllers/user.controller.js";
 import SignupValidatorMW from "../middlewares/signup.validator.mw.js";
 
 const router = Router();
 
-router.get('/signup', SignupValidatorMW, signup)
+router.post('/signup', SignupValidatorMW, signup)
+
+router.get('/verify/:id/:token', verify)
+
+router.get('/check-verified/:id', checkVerified)
 
 export default router;

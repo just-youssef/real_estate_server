@@ -22,11 +22,21 @@ const UserSchema = new Schema({
         type: String,
         required: [true, "password field is required"],
     },
+    'verified': {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true });
 
 UserSchema.methods.genAuthToken = function () {
     // generate jwt
     return jwt.sign({ userID: this._id }, process.env.JWT_SECRET);
+}
+
+UserSchema.methods.verifyEmail = async function () {
+    // set verified to true
+    this.verified = true;
+    await this.save();
 }
 
 const User = model('User', UserSchema);
