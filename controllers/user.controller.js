@@ -1,9 +1,10 @@
-import { genSalt, hash } from "bcrypt";
+import { compare, genSalt, hash } from "bcrypt";
 import User from "../models/user.model.js";
 import Token from "../models/token.model.js";
 import { randomBytes } from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 
+// sign up 
 const signup = async(req, res, nxt) => {
     try {
         // extrct data from request body
@@ -44,17 +45,12 @@ const signup = async(req, res, nxt) => {
         await sendEmail(user.email, 'RealEstate Email Verfication', msg)
 
         return res.status(201).json({ userID: user._id })
-        // generate jwt 
-        // let token = user.genAuthToken();
-
-        // // send token
-        // res.header("x-auth-token", token);
-        // return res.status(201).json({ jwt: token });
     } catch (err) {
         nxt(err);
     }
 }
 
+// verify email
 const verify = async(req, res, nxt) => {
     try {
         // check user exists
@@ -79,7 +75,7 @@ const verify = async(req, res, nxt) => {
     }
 }
 
-// check verified
+// check if email verified
 const checkVerified = async (req, res, nxt) => {
     try {
         let user = await User.findById(req.params.id);
@@ -91,10 +87,26 @@ const checkVerified = async (req, res, nxt) => {
     }
 }
 
-
+// sign in
 const signin = async (req, res, nxt) => {
     try {
-        
+        // extrct data from request body
+        const { email, password } = req.body;
+
+        // check if email not exits
+        let user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ error: { email: "email doesn't exists" } });
+   
+        // check password
+        let valid = await compare(password, user.password);
+        if (!valid) return res.status(400).json({ error: { password: "incorrect password" } });
+
+        // generate jwt 
+        let token = user.genAuthToken();
+
+        // send token
+        res.header("x-auth-token", token);
+        return res.json({ jwt: token });
     } catch (err) {
         nxt(err)
     }
