@@ -26,6 +26,10 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    'avatar':{
+        type: String,
+        default: 'https://res.cloudinary.com/dwcreplnt/image/upload/v1706192074/avatars/default_jvuwdx.png'
+    }
 }, { timestamps: true });
 
 UserSchema.methods.genAuthToken = function () {

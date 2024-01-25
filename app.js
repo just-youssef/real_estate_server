@@ -2,6 +2,9 @@
 import { configDotenv } from "dotenv";
 import { connect } from 'mongoose';
 
+// cloudinary cloud
+import { v2 as cloudinary } from 'cloudinary' ;
+
 // express and third party modules
 import express, { urlencoded, json } from "express";
 import cors from 'cors';
@@ -9,6 +12,7 @@ import helmet from 'helmet';
 
 // routers
 import userRouter from './routes/user.route.js';
+import cloudinaryRouter from './routes/cloudinary.router.js';
 import ErrorMW from "./middlewares/error.mw.js";
 
 // load environment variables
@@ -19,17 +23,26 @@ connect(process.env.MONGODB_URI, { dbName: 'real_estate' })
     .then(() => console.log('MongoDB Connected!'))
     .catch((err) => console.log(err.message))
 
+// configure cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+});
+
 // initialize app
 const app = express();
 
 // using third party modules
 app.use(cors());
 app.use(helmet());
-app.use(urlencoded({ extended: true }));
+app.use(urlencoded({ extended: true, }));
 app.use(json());
 
 // using routers
 app.use("/api/user", userRouter);
+app.use("/api/cloudinary", cloudinaryRouter);
 
 // using error middleware at the end
 app.use(ErrorMW);

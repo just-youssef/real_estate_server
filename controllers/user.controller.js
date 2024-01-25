@@ -150,7 +150,7 @@ const signin = async (req, res, nxt) => {
         const { password: pass, ...rest } = user._doc;
 
         // send response
-        return res.json({ jwt: token, user: rest });
+        return res.json({ token, details: rest });
     } catch (err) {
         nxt(err)
     }
@@ -162,6 +162,15 @@ const updateUser = async (req, res, nxt) => {
         // check user exits
         let user = await User.findById(req.userID);
         if (!user) return res.status(404).json({ error: "user not found" });
+
+        // check if email already exists
+        if(req.body.email){
+            let email_exists = await User.findOne({ email: req.body.email });
+            if (email_exists && email_exists._id.toString() !== req.userID) {
+                console.log("email already exists");
+                return res.status(400).json({ error: { email: "email already exists" } });
+            }
+        }
 
         // update user by req.body
         Object.keys(req.body).forEach(key => user[key] = req.body[key]);
