@@ -28,7 +28,7 @@ const UserSchema = new Schema({
     },
     'avatar':{
         type: String,
-        default: 'https://res.cloudinary.com/dwcreplnt/image/upload/v1706192074/avatars/default_jvuwdx.png'
+        default: ''
     }
 }, { timestamps: true });
 
