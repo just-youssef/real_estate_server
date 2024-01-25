@@ -159,10 +159,6 @@ const signin = async (req, res, nxt) => {
 // update user
 const updateUser = async (req, res, nxt) => {
     try {
-        // check user exits
-        let user = await User.findById(req.userID);
-        if (!user) return res.status(404).json({ error: "user not found" });
-
         // check if email already exists
         if(req.body.email){
             let email_exists = await User.findOne({ email: req.body.email });
@@ -173,14 +169,18 @@ const updateUser = async (req, res, nxt) => {
         }
 
         // update user by req.body
-        Object.keys(req.body).forEach(key => user[key] = req.body[key]);
-
-        // save updates
-        await user.save();
-        console.log('user updated');
+        const updatedUser = await User.findByIdAndUpdate(req.userID, {
+            $set: {
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                email: req.body.email,
+                avatar: req.body.avatar,
+            }
+        }, { new: true });
+        console.log("user updated");
 
         // exclude password and send user data
-        const { password: pass, ...rest } = user._doc;
+        const { password: pass, ...rest } = updatedUser._doc;
         return res.json(rest)
     } catch (err) {
         nxt(err)
@@ -193,9 +193,8 @@ const changePassword = async (req, res, nxt) => {
         // extrct data from request body
         const { old_password, new_password } = req.body;
 
-        // check user exits
+        // get user details
         let user = await User.findById(req.userID);
-        if (!user) return res.status(404).json({ error: "user not found" });
 
         // check old_password
         let valid = await compare(old_password, user.password);
