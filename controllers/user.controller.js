@@ -211,6 +211,7 @@ const changePassword = async (req, res, nxt) => {
         // update password
         user.password = hashedPassword
         await user.save()
+        console.log('password changed');
 
         return res.json({ message: 'password changed' })
     } catch (err) {
