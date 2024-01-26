@@ -187,7 +187,7 @@ const updateUser = async (req, res, nxt) => {
     }
 }
 
-// show user password
+// change password
 const changePassword = async (req, res, nxt) => {
     try {
         // extrct data from request body
@@ -219,6 +219,19 @@ const changePassword = async (req, res, nxt) => {
     }
 }
 
+// delete user
+const deleteUser = async (req, res, nxt) => {
+    try {
+        // delete user
+        await User.findByIdAndDelete(req.userID);
+
+        // return response
+        return res.json({ message: "user deleted..!" })
+    } catch (err) {
+        nxt(err)
+    }
+}
+
 export {
     signup,
     verify,
@@ -226,5 +239,6 @@ export {
     signin,
     resendVerfication,
     updateUser,
-    changePassword
+    changePassword,
+    deleteUser
 }
