@@ -13,6 +13,7 @@ import helmet from 'helmet';
 // routers
 import userRouter from './routes/user.route.js';
 import cloudinaryRouter from './routes/cloudinary.router.js';
+import listingRouter from './routes/listing.router.js';
 import ErrorMW from "./middlewares/error.mw.js";
 
 // load environment variables
@@ -43,6 +44,7 @@ app.use(json());
 // using routers
 app.use("/api/user", userRouter);
 app.use("/api/cloudinary", cloudinaryRouter);
+app.use("/api/listing", listingRouter);
 
 // using error middleware at the end
 app.use(ErrorMW);
