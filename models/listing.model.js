@@ -6,7 +6,7 @@ const listingSchema = new Schema({
         ref: 'User',
         required: true
     },
-    name: {
+    title: {
         type: String,
         required: true,
     },
@@ -41,7 +41,6 @@ const listingSchema = new Schema({
     },
     discountPrice: {
         type: Number,
-        required: true,
     },
     bathrooms: {
         type: Number,
