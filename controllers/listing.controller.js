@@ -14,13 +14,13 @@ const createListing = async (req, res, nxt) => {
 const getListingById = async (req, res, nxt) => {
     try {
         const listing = await Listing.findById(req.params.id)
-        if(!listing) return res.status(404).json({error: "lsiting not found"})
+        if(!listing) return res.status(404).json({error: "listing not found"})
 
         return res.json(listing)
     } catch (err) {
         nxt(err);
     }
-}
+};
 
 const updateListingById = async (req, res, nxt) => {
     try {
@@ -54,8 +54,37 @@ const updateListingById = async (req, res, nxt) => {
     }
 };
 
+const getUserListings = async (req, res, nxt) => {
+    try {
+        const listings = await Listing.find({ owner: req.userID }).sort({ "updatedAt": -1 });
+        console.log(`found ${listings.length} listings`);
+
+        return res.json(listings);
+    } catch (err) {
+        nxt(err)
+    }
+}
+
+const deleteListingById = async (req, res, nxt) => {
+    try {
+        const listing = await Listing.findById(req.params.id)
+        if(!listing) return res.status(404).json({error: "listing not found"})
+
+        // check if req user is the listing owner
+        if(req.userID !== listing.owner.toString()) return res.status(403).json({error: "access denied"})
+
+        await Listing.findByIdAndDelete(req.params.id);
+        console.log("listing deleted..!");
+
+        return res.json({ message: "listing deleted..!" })
+    } catch (err) {
+        nxt(err);
+    }
+}
 export {
     createListing,
     getListingById,
     updateListingById,
+    getUserListings,
+    deleteListingById,
 }
