@@ -86,8 +86,8 @@ const searchListings = async (req, res, nxt) => {
     try {
         const searchTerm = req.query.searchTerm || '';
         const sort = req.query.sort || 'createdAt';
-        const order = req.query.order || -1;
-        const limit = parseInt(req.query.limit) || 9;
+        const order = req.query.order || 'desc';
+        const limit = parseInt(req.query.limit) || 6;
         const startIndex = parseInt(req.query.startIndex) || 0;
 
         let offer = req.query.offer;
