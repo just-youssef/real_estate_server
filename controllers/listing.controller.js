@@ -13,7 +13,7 @@ const createListing = async (req, res, nxt) => {
 
 const getListingById = async (req, res, nxt) => {
     try {
-        const listing = await Listing.findById(req.params.id)
+        const listing = await Listing.findById(req.params.id).populate('owner', ['first_name', 'last_name', 'email', 'password']);
         if(!listing) return res.status(404).json({error: "listing not found"})
 
         return res.json(listing)
@@ -56,7 +56,7 @@ const updateListingById = async (req, res, nxt) => {
 
 const getUserListings = async (req, res, nxt) => {
     try {
-        const listings = await Listing.find({ owner: req.userID }).sort({ "updatedAt": -1 });
+        const listings = await Listing.find({ owner: req.userID }).sort({ "createdAt": -1 });
         console.log(`found ${listings.length} listings`);
 
         return res.json(listings);
@@ -81,10 +81,56 @@ const deleteListingById = async (req, res, nxt) => {
         nxt(err);
     }
 }
+
+const searchListings = async (req, res, nxt) => {
+    try {
+        const searchTerm = req.query.searchTerm || '';
+        const sort = req.query.sort || 'createdAt';
+        const order = req.query.order || -1;
+        const limit = parseInt(req.query.limit) || 9;
+        const startIndex = parseInt(req.query.startIndex) || 0;
+
+        let offer = req.query.offer;
+        if ([undefined, 'false'].includes(offer)) {
+            offer = { $in: [false, true] };
+        }
+
+        let furnished = req.query.furnished;
+        if ([undefined, 'false'].includes(furnished)) {
+            furnished = { $in: [false, true] };
+        }
+
+        let parking = req.query.parking;
+        if ([undefined, 'false'].includes(parking)) {
+            parking = { $in: [false, true] };
+        }
+        
+        let type = req.query.type;
+        if ([undefined, 'all'].includes(type)) {
+            type = { $in: ['sell', 'rent'] };
+        }
+
+        const listings = await Listing.find({
+            title: { $regex: searchTerm, $options: 'i' },
+            offer,
+            furnished,
+            parking,
+            type,
+        }).sort({ [sort]: order }).limit(limit).skip(startIndex);
+        console.log(`found ${listings.length} listings`);
+
+        return res.json(listings);
+    } catch (err) {
+        nxt(err);
+    }
+}
+
+
 export {
     createListing,
     getListingById,
     updateListingById,
     getUserListings,
     deleteListingById,
+    searchListings,
 }
